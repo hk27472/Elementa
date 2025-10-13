@@ -1,3 +1,4 @@
+@file:Suppress("DEPRECATION")
 package gg.essential.elementa.unstable.state.v2.impl.legacy
 
 

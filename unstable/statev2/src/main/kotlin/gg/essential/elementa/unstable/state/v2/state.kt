@@ -240,11 +240,13 @@ interface MutableState<T> : State<T> {
 }
 
 /** A [State] delegating to a configurable target [State] */
+@Deprecated("This no longer needs to be a primitive. It is basically just a less-flexible `MutableState<State<T>>`.")
 interface DelegatingState<T> : State<T> {
   fun rebind(newState: State<T>)
 }
 
 /** A [MutableState] delegating to a configurable target [MutableState] */
+@Deprecated("This no longer needs to be a primitive. It is basically just a less-flexible `MutableState<MutableState<T>>`.")
 @JvmDefaultWithoutCompatibility
 interface DelegatingMutableState<T> : MutableState<T> {
   fun rebind(newState: MutableState<T>)
@@ -257,9 +259,15 @@ fun <T> stateOf(value: T): State<T> = ImmutableState(value)
 fun <T> mutableStateOf(value: T): MutableState<T> = impl.mutableState(value)
 
 /** Creates a new [DelegatingState] with the given target [State]. */
+@Deprecated("This no longer needs to be a primitive. It is basically just a less-flexible `MutableState<State<T>>`.",
+    replaceWith = ReplaceWith("val myStateSource = mutableStateOf(state)\nval myState = myStateSource.flatten()"))
+@Suppress("DEPRECATION")
 fun <T> stateDelegatingTo(state: State<T>): DelegatingState<T> = impl.stateDelegatingTo(state)
 
 /** Creates a new [DelegatingMutableState] with the given target [MutableState]. */
+@Deprecated("This no longer needs to be a primitive. It is basically just a less-flexible `MutableState<MutableState<T>>`.",
+    replaceWith = ReplaceWith("val myStateSource = mutableStateOf(state)\nval myState = myStateSource.flatten()"))
+@Suppress("DEPRECATION")
 fun <T> mutableStateDelegatingTo(state: MutableState<T>): DelegatingMutableState<T> =
     impl.mutableStateDelegatingTo(state)
 
