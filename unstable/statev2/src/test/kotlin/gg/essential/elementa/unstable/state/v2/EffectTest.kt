@@ -118,6 +118,24 @@ class EffectTest {
     }
 
     @Test
+    fun testEffectChangingItsOwnDependencies() {
+        val state = mutableStateOf(1)
+
+        val seenValues = mutableListOf<Int>()
+
+        val unregister = effect(ReferenceHolder.Weak) {
+            val value = state()
+            seenValues.add(value)
+
+            state.set(2)
+        }
+
+        assertEquals(listOf(1, 2), seenValues)
+
+        unregister()
+    }
+
+    @Test
     fun testEffectGarbageCollection() {
         val state = mutableStateOf(0)
 

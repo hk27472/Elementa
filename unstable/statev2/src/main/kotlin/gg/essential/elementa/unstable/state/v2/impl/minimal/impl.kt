@@ -124,6 +124,11 @@ private class Node<T>(
         if (impl !is Node<*>) return getUntracked()
         if (impl.state == NodeState.Dead) return getUntracked()
 
+        // Note: Need to get value before registering the dependent, otherwise if this node is dirty, getUntracked will
+        // re-evaluate it which marks all dependents as dirty, but this new dependent hasn't seen the old value, so it'd
+        // be wrong to mark it as dirty.
+        val value = getUntracked()
+
         val dependency = this
         val dependent = impl
 
@@ -134,7 +139,7 @@ private class Node<T>(
         for (edge in if (listA.size < listB.size) listA else listB) {
             if (edge.dependency == dependency && edge.dependent == dependent) {
                 edge.suspended = false // may need to re-enable the edge if it's currently suspended
-                return getUntracked()
+                return value
             }
         }
 
@@ -147,7 +152,7 @@ private class Node<T>(
         // (this is really fast in when there isn't anything to do thanks to the ReferenceQueue)
         cleanupStaleReferences()
 
-        return getUntracked()
+        return value
     }
 
     override fun getUntracked(): T {
@@ -219,7 +224,10 @@ private class Node<T>(
             }
         }
 
-        if (state == NodeState.Dirty) {
+        val wasDirty = state == NodeState.Dirty
+        state = NodeState.Clean
+
+        if (wasDirty) {
             for (edge in allDependencies) {
                 edge.suspended = true
             }
@@ -247,8 +255,6 @@ private class Node<T>(
                 }
             }
         }
-
-        state = NodeState.Clean
     }
 
     fun cleanup() {
