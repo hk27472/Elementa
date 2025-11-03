@@ -232,6 +232,7 @@ private class Node<T>(
                 edge.suspended = true
             }
 
+            // Beware: This invocation may throw an exception if user code is faulty! We should handle that correctly.
             val newValue = func(this)
 
             if (state == NodeState.Dead) {
@@ -327,17 +328,31 @@ private class Update {
             return
         }
 
+        var exception: Throwable? = null
+
         processing = true
         try {
             var i = 0
             while (true) {
                 val node = queue.getOrNull(i) ?: break
-                node.update(this)
+                try {
+                    node.update(this)
+                } catch (e: Throwable) {
+                    if (exception == null) {
+                        exception = e
+                    } else {
+                        exception.addSuppressed(e)
+                    }
+                }
                 i++
             }
             queue.clear()
         } finally {
             processing = false
+        }
+
+        if (exception != null) {
+            throw exception
         }
     }
 
