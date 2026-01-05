@@ -107,6 +107,7 @@ interface StateScope {
 /**
  * Executes the supplied [block] on this component's animationFrame
  */
+@Deprecated("See [ElementaVersion.V8].")
 fun UIComponent.onAnimationFrame(block: () -> Unit) =
     enableEffect(object : Effect() {
         override fun animationFrame() {
