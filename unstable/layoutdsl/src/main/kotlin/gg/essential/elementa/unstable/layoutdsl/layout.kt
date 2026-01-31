@@ -32,18 +32,25 @@ class LayoutScope(
     private val childrenScopes = mutableListOf<LayoutScope>()
 
     operator fun <T : UIComponent> T.invoke(modifier: Modifier = Modifier, block: LayoutScope.() -> Unit = {}): T {
-        this@LayoutScope.component.getChildModifier().applyToComponent(this)
-        modifier.applyToComponent(this)
+        addChild(this, modifier, block)
+        return this
+    }
 
-        val childScope = LayoutScope(this, this@LayoutScope, this)
+    fun <T : UIComponent> addChild(childComponent: T, modifier: Modifier = Modifier, block: LayoutScope.() -> Unit = {}) {
+        contract {
+            callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+        }
+
+        component.getChildModifier().applyToComponent(childComponent)
+        modifier.applyToComponent(childComponent)
+
+        val childScope = LayoutScope(childComponent, this, childComponent)
         childrenScopes.add(childScope)
 
         childScope.block()
 
         val index = childScope.findNextIndexIn(component) ?: 0
-        component.insertChildAt(this, index)
-
-        return this
+        component.insertChildAt(childComponent, index)
     }
 
     operator fun LayoutDslComponent.invoke(modifier: Modifier = Modifier) = layout(modifier)

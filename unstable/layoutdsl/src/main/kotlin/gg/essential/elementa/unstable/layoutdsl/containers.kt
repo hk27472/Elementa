@@ -35,7 +35,8 @@ fun LayoutScope.box(modifier: Modifier = Modifier, block: LayoutScope.() -> Unit
         setHeight(ChildBasedSizeConstraint())
     }
     container.addChildModifier(Modifier.alignHorizontal(Alignment.Center).alignVertical(Alignment.Center))
-    return container(modifier = modifier, block = block)
+    addChild(container, modifier = modifier, block = block)
+    return container
 }
 
 fun LayoutScope.row(horizontalArrangement: Arrangement = Arrangement.spacedBy(), verticalAlignment: Alignment = Alignment.Center, block: LayoutScope.() -> Unit): UIComponent {
@@ -57,7 +58,7 @@ fun LayoutScope.row(modifier: Modifier, horizontalArrangement: Arrangement = Arr
 
     rowContainer.addChildModifier(Modifier.alignVertical(verticalAlignment))
 
-    rowContainer(modifier = modifier, block = block)
+    addChild(rowContainer, modifier = modifier, block = block)
     horizontalArrangement.initialize(rowContainer, Axis.HORIZONTAL)
 
     return rowContainer
@@ -79,7 +80,7 @@ fun LayoutScope.column(modifier: Modifier, verticalArrangement: Arrangement = Ar
 
     columnContainer.addChildModifier(Modifier.alignHorizontal(horizontalAlignment))
 
-    columnContainer(modifier = modifier, block = block)
+    addChild(columnContainer, modifier = modifier, block = block)
     verticalArrangement.initialize(columnContainer, Axis.VERTICAL)
 
     return columnContainer
@@ -108,7 +109,7 @@ fun LayoutScope.flowContainer(
 
     FlowLayoutController(flowContainer, xSpacingMin, ySpacing, itemArrangement, itemAlignment)
 
-    flowContainer(modifier = modifier, block = block)
+    addChild(flowContainer, modifier = modifier, block = block)
 
     return flowContainer
 }
