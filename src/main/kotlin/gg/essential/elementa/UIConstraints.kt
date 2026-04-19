@@ -40,7 +40,7 @@ open class UIConstraints(protected val component: UIComponent) : Observable() {
             field = value
             update(ConstraintType.TEXT_SCALE)
         }
-    var fontProvider: FontProvider = DefaultFonts.VANILLA_FONT_RENDERER
+    var fontProvider: FontProvider = DefaultFonts.MINECRAFT_FIVE
         set(value) {
             field = value
             update(ConstraintType.FONT_PROVIDER)
